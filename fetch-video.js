@@ -4,7 +4,7 @@ const fs = require("fs");
 async function extractM3U8() {
   const url = "https://www.elahmad.com/tv/live/channel.php?id=almajd";
 
-  console.log("فتح الصفحة:", url);
+  console.log("📺 فتح الصفحة:", url);
 
   const browser = await puppeteer.launch({
     headless: "new",
@@ -30,7 +30,8 @@ async function extractM3U8() {
 
   await page.goto(url, { waitUntil: "networkidle2", timeout: 0 });
 
-  await page.waitForTimeout(5000);
+  // استبدال waitForTimeout
+  await new Promise(resolve => setTimeout(resolve, 7000)); // ننتظر 7 ثواني
 
   await browser.close();
 
