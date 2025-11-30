@@ -1,16 +1,21 @@
-const puppeteer = require("puppeteer");
 const fs = require("fs");
+const puppeteer = require("puppeteer-extra");
+const Stealth = require("puppeteer-extra-plugin-stealth");
+
+// تفعيل التخفي ضد Cloudflare
+puppeteer.use(Stealth());
 
 async function extractM3U8() {
   const url = "https://www.elahmad.com/tv/live/channel.php?id=almajd";
 
-  console.log("📺 فتح الصفحة:", url);
+  console.log("🚀 فتح الصفحة:", url);
 
   const browser = await puppeteer.launch({
     headless: "new",
     args: [
       "--no-sandbox",
-      "--disable-setuid-sandbox"
+      "--disable-setuid-sandbox",
+      "--disable-blink-features=AutomationControlled"
     ]
   });
 
@@ -18,30 +23,35 @@ async function extractM3U8() {
 
   const m3u8Links = [];
 
-  // التقاط كل طلبات الشبكة
+  // مراقبة كل طلبات الشبكة
   page.on("request", req => {
     const reqUrl = req.url();
 
     if (reqUrl.includes(".m3u8")) {
-      console.log("🎯 تم العثور على رابط M3U8:", reqUrl);
+      console.log("🎯 M3U8 FOUND:", reqUrl);
       m3u8Links.push(reqUrl);
     }
   });
 
-  await page.goto(url, { waitUntil: "networkidle2", timeout: 0 });
+  await page.goto(url, {
+    waitUntil: "domcontentloaded",
+    timeout: 0
+  });
 
-  // استبدال waitForTimeout
-  await new Promise(resolve => setTimeout(resolve, 7000)); // ننتظر 7 ثواني
+  // ننتظر تحميل الفيديو
+  console.log("⌛ انتظار تحميل الصفحة...");
+  await new Promise(resolve => setTimeout(resolve, 8000));
 
   await browser.close();
 
   if (m3u8Links.length === 0) {
-    console.log("❌ لم يتم العثور على أي روابط M3U8");
+    console.log("❌ لا توجد روابط M3U8");
     return;
   }
 
+  // حفظ النتائج
   fs.writeFileSync("m3u8.json", JSON.stringify(m3u8Links, null, 2));
-  console.log("✔ تم حفظ الروابط في m3u8.json");
+  console.log("✔ تم حفظ m3u8.json بنجاح");
 }
 
 extractM3U8();
