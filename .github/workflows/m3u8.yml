@@ -24,14 +24,21 @@ jobs:
       - name: Run Scraper
         run: node fetch-video.js
 
-      - name: Commit M3U8 File
+      - name: Push m3u8.json to el-links repo
         run: |
           if [ -f m3u8.json ]; then
-            git config user.name "github-actions[bot]"
-            git config user.email "github-actions[bot]@users.noreply.github.com"
+            git config --global user.email "github-actions[bot]@users.noreply.github.com"
+            git config --global user.name "github-actions[bot]"
+            
+            # استنسخ مستودع el-links
+            git clone https://x-access-token:${{ secrets.EL_LINKS_TOKEN }}@github.com/imagesloads/el-links.git links-repo
+            
+            cp m3u8.json links-repo/m3u8.json
+            
+            cd links-repo
             git add m3u8.json
-            git commit -m "Updated m3u8" || echo "No changes"
+            git commit -m "Update m3u8" || echo "No changes"
             git push
           else
-            echo "⚠️ لا يوجد ملف m3u8.json — لم يتم العثور على روابط."
+            echo "⚠️ لا يوجد ملف m3u8.json"
           fi
