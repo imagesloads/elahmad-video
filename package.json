@@ -1,0 +1,8 @@
+{
+  "name": "elahmad-video",
+  "version": "1.0.0",
+  "main": "fetch-video.js",
+  "dependencies": {
+    "puppeteer": "^22.0.0"
+  }
+}
