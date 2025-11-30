@@ -6,7 +6,7 @@ const Stealth = require("puppeteer-extra-plugin-stealth");
 puppeteer.use(Stealth());
 
 async function extractM3U8() {
-  const url = "https://www.elahmad.com/tv/live/channel.php?id=almajd";
+  const url = "http://azrogo.com/iphone/news/ch/aljazeera_ar.php";
 
   console.log("🚀 فتح الصفحة:", url);
 
